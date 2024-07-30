@@ -3,7 +3,22 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"sync"
 )
+
+type apiConfig struct {
+	mu             sync.Mutex
+	fileserverHits int
+}
+
+func (a *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		a.mu.Lock()
+		defer a.mu.Unlock()
+		a.fileserverHits++
+		next.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 	mux := http.NewServeMux()
@@ -19,13 +34,22 @@ func main() {
 	// 	// w.WriteHeader(http.StatusNotFound)
 	// w.Write([]byte("404 - Not Found"))
 	// })
+	apiConfig := apiConfig{}
 	fileServer := http.FileServer(http.Dir("./public"))
-	mux.Handle("/app/", http.StripPrefix("/app", fileServer))
+	mux.Handle("/app/", apiConfig.middlewareMetricsInc(http.StripPrefix("/app", fileServer)))
 	// http.Handle("/", fileServer)
 
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
+	})
+
+	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		apiConfig.mu.Lock()
+		hits := apiConfig.fileserverHits
+		apiConfig.mu.Unlock()
+		w.Write([]byte(fmt.Sprintf("Hits: %d", hits)))
 	})
 
 	fmt.Println("server listening on localhost:8080")
