@@ -39,12 +39,12 @@ func main() {
 	mux.Handle("/app/", apiConfig.middlewareMetricsInc(http.StripPrefix("/app", fileServer)))
 	// http.Handle("/", fileServer)
 
-	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
 
-	mux.HandleFunc("GET /metrics", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/metrics", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		apiConfig.mu.Lock()
 		hits := apiConfig.fileserverHits
@@ -52,7 +52,7 @@ func main() {
 		w.Write([]byte(fmt.Sprintf("Hits: %d", hits)))
 	})
 
-	mux.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/api/reset", func(w http.ResponseWriter, r *http.Request) {
 		apiConfig.mu.Lock()
 		apiConfig.fileserverHits = 0
 		apiConfig.mu.Unlock()
