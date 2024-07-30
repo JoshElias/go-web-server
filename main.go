@@ -39,17 +39,24 @@ func main() {
 	mux.Handle("/app/", apiConfig.middlewareMetricsInc(http.StripPrefix("/app", fileServer)))
 	// http.Handle("/", fileServer)
 
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
 
-	mux.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /metrics", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		apiConfig.mu.Lock()
 		hits := apiConfig.fileserverHits
 		apiConfig.mu.Unlock()
 		w.Write([]byte(fmt.Sprintf("Hits: %d", hits)))
+	})
+
+	mux.HandleFunc("/reset", func(w http.ResponseWriter, r *http.Request) {
+		apiConfig.mu.Lock()
+		apiConfig.fileserverHits = 0
+		apiConfig.mu.Unlock()
+		w.WriteHeader(http.StatusOK)
 	})
 
 	fmt.Println("server listening on localhost:8080")
