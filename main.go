@@ -44,12 +44,20 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	mux.HandleFunc("GET /api/metrics", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
+	mux.HandleFunc("GET /admin/metrics", func(w http.ResponseWriter, r *http.Request) {
+		var template = `<html>
+<body>
+    <h1>Welcome, Chirpy Admin</h1>
+    <p>Chirpy has been visited %d times!</p>
+</body>
+
+</html>
+`
+		w.Header().Set("Content-Type", "text/html")
 		apiConfig.mu.Lock()
 		hits := apiConfig.fileserverHits
 		apiConfig.mu.Unlock()
-		w.Write([]byte(fmt.Sprintf("Hits: %d", hits)))
+		w.Write([]byte(fmt.Sprintf(template, hits)))
 	})
 
 	mux.HandleFunc("/api/reset", func(w http.ResponseWriter, r *http.Request) {
