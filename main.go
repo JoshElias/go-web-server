@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 )
@@ -13,6 +13,7 @@ type apiConfig struct {
 	fileserverHits int
 }
 
+// Middleware
 func (a *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		a.mu.Lock()
@@ -22,6 +23,7 @@ func (a *apiConfig) middlewareMetricsInc(next http.Handler) http.Handler {
 	})
 }
 
+// listen on some endpoints, do some stuff
 func main() {
 	mux := http.NewServeMux()
 	apiConfig := apiConfig{}
@@ -68,11 +70,7 @@ func main() {
 			Valid bool   `json:"valid"`
 		}
 
-		decoder := json.NewDecoder(r.Body)
-		params := parameters{}
-		err := decoder.Decode(&params)
-		if err != nil {
-			log.Printf("Error decoding body: %s", err)
+		errorResponse := func(err error, code int) {
 			res := returnObj{
 				Error: fmt.Sprintf("%v", err),
 			}
@@ -82,25 +80,21 @@ func main() {
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(500)
+			w.WriteHeader(code)
 			w.Write(data)
+		}
+
+		decoder := json.NewDecoder(r.Body)
+		params := parameters{}
+		err := decoder.Decode(&params)
+		if err != nil {
+			errorResponse(err, 500)
 			return
 		}
 
 		if len(params.Body) > 140 {
-			res := returnObj{
-				Error: "Chirp is too long",
-			}
-			data, err := json.Marshal(res)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			fmt.Println("sending error data")
-			fmt.Println(data)
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(400)
-			w.Write(data)
+			err := errors.New("Chirp is too long")
+			errorResponse(err, 400)
 			return
 		}
 
