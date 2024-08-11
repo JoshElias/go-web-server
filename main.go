@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/JoshElias/chirpy/handlers"
 	"net/http"
 	"sync"
 )
@@ -31,11 +32,7 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./public"))
 	mux.Handle("/app/", apiConfig.middlewareMetricsInc(http.StripPrefix("/app", fileServer)))
 
-	mux.HandleFunc("GET /api/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
-	})
-
+	mux.HandleFunc("GET /api/healthz", handlers.HealthHandler)
 	mux.HandleFunc("/api/reset", func(w http.ResponseWriter, r *http.Request) {
 		apiConfig.mu.Lock()
 		apiConfig.fileserverHits = 0
