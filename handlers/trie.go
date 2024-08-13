@@ -18,12 +18,12 @@ func NewTrie() *Trie {
 	}
 }
 
-func (t *Trie) Add(v string) {
-	if len(v) == 0 {
+func (t *Trie) Add(s string) {
+	if len(s) == 0 {
 		return
 	}
 	current := t.root
-	for _, r := range v {
+	for _, r := range s {
 		if _, exists := current.children[r]; !exists {
 			current.children[r] = &node{
 				children: make(map[rune]*node),
@@ -33,5 +33,19 @@ func (t *Trie) Add(v string) {
 		current = current.children[r]
 	}
 	current.isEnd = true
+}
+
+func (t *Trie) Exists(s string) bool {
+	if len(s) == 0 {
+		return false
+	}
+	current := t.root
+	for _, r := range s {
+		if _, exists := current.children[r]; !exists {
+			return false
+		}
+		current = current.children[r]
+	}
+	return current.isEnd
 }
 
