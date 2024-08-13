@@ -5,11 +5,12 @@ import (
 	"net/http"
 )
 
-func MetricsInc(next http.Handler, a *config.ApiConfig) http.Handler {
+func MetricsInc(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		a.Mu.Lock()
-		defer a.Mu.Unlock()
-		a.FileserverHits++
+		c := config.GetConfig()
+		c.Mu.Lock()
+		defer c.Mu.Unlock()
+		c.FileserverHits++
 		next.ServeHTTP(w, r)
 	})
 }
