@@ -17,7 +17,7 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", handlers.HealthHandler)
 	mux.HandleFunc("/api/reset", handlers.ResetHandler)
 	mux.HandleFunc("/admin/metrics", handlers.HandleMetricsAdmin)
-	mux.HandleFunc("/api/validate_chirp", handlers.HandleValidateChirp)
+	mux.HandleFunc("POST /api/chirps", handlers.HandleAddChirp)
 
 	fmt.Println("server listening on localhost:8080")
 	if err := http.ListenAndServe("localhost:8080", mux); err == nil {
