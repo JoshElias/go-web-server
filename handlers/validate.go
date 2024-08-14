@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -30,42 +28,29 @@ func HandleValidateChirp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type returnObj struct {
-		Error string `json:"error,omitempty"`
-		Valid bool   `json:"valid"`
+		CleanedBody string `json:"cleaned_body,omitempty"`
 	}
 
-	errorResponse := func(err error, code int) {
-		res := returnObj{
-			Error: fmt.Sprintf("%v", err),
-		}
-		data, err := json.Marshal(res)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	errorResponse := func(code int) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(code)
-		w.Write(data)
 	}
 
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		errorResponse(err, 500)
+		errorResponse(500)
 		return
 	}
 
 	if len(params.Body) > 140 {
-		err := errors.New("Chirp is too long")
-		errorResponse(err, 400)
+		errorResponse(400)
 		return
 	}
 
-	params.Body = cleanChirp(params.Body)
-
 	res := returnObj{
-		Valid: true,
+		CleanedBody: cleanChirp(params.Body),
 	}
 	data, err := json.Marshal(res)
 	if err != nil {
