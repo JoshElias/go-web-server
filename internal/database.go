@@ -54,3 +54,16 @@ func (conn *DbConnection) writeDb(db DbStructure) error {
 	_, err = f.Write(bytes)
 	return err
 }
+
+func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
+	db, err := conn.loadDb()
+	if err != nil {
+		return nil, err
+	}
+	chirpLen := len(db.Chirps)
+	chirps := make([]ChirpEntity, chirpLen)
+	for i, chirp := range db.Chirps {
+		chirps[i] = chirp
+	}
+	return chirps, nil
+}
