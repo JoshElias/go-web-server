@@ -5,7 +5,23 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 )
+
+var badWords = []string{
+	"kerfuffle",
+	"sharbert",
+	"fornax",
+}
+
+var badWordTree *Trie
+
+func init() {
+	badWordTree = NewTrie()
+	for _, w := range badWords {
+		badWordTree.Add(w)
+	}
+}
 
 func HandleValidateChirp(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
@@ -46,6 +62,8 @@ func HandleValidateChirp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	params.Body = cleanChirp(params.Body)
+
 	res := returnObj{
 		Valid: true,
 	}
@@ -57,4 +75,21 @@ func HandleValidateChirp(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(data)
+}
+
+func cleanChirp(chirp string) string {
+	words := strings.Fields(chirp)
+	edited := false
+	for i, word := range words {
+		word = strings.ToLower(word)
+		if !badWordTree.Exists(word) {
+			continue
+		}
+		edited = true
+		words[i] = "****"
+	}
+	if !edited {
+		return chirp
+	}
+	return strings.Join(words, " ")
 }
