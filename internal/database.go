@@ -67,3 +67,21 @@ func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
 	}
 	return chirps, nil
 }
+
+func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
+	db, err := conn.loadDb()
+	if err != nil {
+		return ChirpEntity{}, err
+	}
+	id := len(db.Chirps)
+	newEntity := ChirpEntity{
+		Id:   id,
+		Body: message,
+	}
+	db.Chirps[id] = newEntity
+	err = conn.writeDb(db)
+	if err != nil {
+		return ChirpEntity{}, nil
+	}
+	return newEntity, nil
+}
