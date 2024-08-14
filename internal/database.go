@@ -14,24 +14,23 @@ type DbConnection struct {
 }
 
 type DbStructure struct {
-	Chirps map[int]ChirpEntity
+	Chirps map[int]ChirpEntity `json:"chirps"`
 }
 
 func NewDbConnection(path string) (*DbConnection, error) {
-	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
 	return &DbConnection{
 		path: path,
-		file: f,
 		mux:  &sync.RWMutex{},
 	}, nil
 }
 
 func (conn *DbConnection) loadDb() (DbStructure, error) {
-	byteArr, err := io.ReadAll(conn.file)
+	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_RDONLY, 0644)
+	if err != nil {
+		return DbStructure{}, err
+	}
+	defer f.Close()
+	byteArr, err := io.ReadAll(f)
 	if err != nil {
 		return DbStructure{}, err
 	}
@@ -40,4 +39,18 @@ func (conn *DbConnection) loadDb() (DbStructure, error) {
 		return DbStructure{}, err
 	}
 	return db, nil
+}
+
+func (conn *DbConnection) writeDb(db DbStructure) error {
+	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	bytes, err := json.Marshal(db)
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(bytes)
+	return err
 }
