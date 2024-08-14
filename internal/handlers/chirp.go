@@ -49,13 +49,20 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		internal.RespondWithError(w, 500)
 	}
-	// save in database
-	// return new chirp entity
 	internal.RespondWithJSON(w, 201, newChirp)
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
+	dbPath := filepath.Join(getCwd(), "database.json")
+	conn, err := internal.NewDbConnection(dbPath)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+	}
+	chirps, err := conn.GetChirps()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+	}
+	internal.RespondWithJSON(w, 201, chirps)
 }
 
 func getCwd() string {
