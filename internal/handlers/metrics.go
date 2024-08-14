@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JoshElias/chirpy/config"
+	"github.com/JoshElias/chirpy/internal"
 )
 
 func HandleMetricsAdmin(w http.ResponseWriter, r *http.Request) {
@@ -15,10 +15,10 @@ func HandleMetricsAdmin(w http.ResponseWriter, r *http.Request) {
 </body>
 </html>
 `
-	c := config.GetConfig()
+	m := internal.GetMetrics()
 	w.Header().Set("Content-Type", "text/html")
-	c.Mu.Lock()
-	hits := c.FileserverHits
-	c.Mu.Unlock()
+	m.Mu.Lock()
+	hits := m.FileserverHits
+	m.Mu.Unlock()
 	w.Write([]byte(fmt.Sprintf(template, hits)))
 }

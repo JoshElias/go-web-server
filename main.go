@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JoshElias/chirpy/handlers"
-	"github.com/JoshElias/chirpy/middleware"
+	"github.com/JoshElias/chirpy/internal/handlers"
+	"github.com/JoshElias/chirpy/internal/middleware"
 )
 
 // listen on some endpoints, do some stuff

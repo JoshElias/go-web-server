@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"github.com/JoshElias/chirpy/config"
+	"github.com/JoshElias/chirpy/internal"
 	"net/http"
 )
 
 func ResetHandler(w http.ResponseWriter, r *http.Request) {
-	c := config.GetConfig()
-	c.Mu.Lock()
-	c.FileserverHits = 0
-	c.Mu.Unlock()
+	m := internal.GetMetrics()
+	m.Mu.Lock()
+	m.FileserverHits = 0
+	m.Mu.Unlock()
 	w.WriteHeader(http.StatusOK)
 }

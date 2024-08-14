@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/JoshElias/chirpy/internal"
 )
 
 var badWords = []string{
@@ -12,10 +14,10 @@ var badWords = []string{
 	"fornax",
 }
 
-var badWordTree *Trie
+var badWordTree *internal.Trie
 
 func init() {
-	badWordTree = NewTrie()
+	badWordTree = internal.NewTrie()
 	for _, w := range badWords {
 		badWordTree.Add(w)
 	}

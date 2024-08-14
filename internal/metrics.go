@@ -1,25 +1,25 @@
-package config
+package internal
 
 import (
 	"sync"
 )
 
-type ApiConfig struct {
+type Metrics struct {
 	Mu             sync.Mutex
 	FileserverHits int
 }
 
 var (
-	config ApiConfig
-	once   sync.Once
+	metrics Metrics
+	once    sync.Once
 )
 
-func GetConfig() *ApiConfig {
+func GetMetrics() *Metrics {
 	once.Do(func() {
-		config = ApiConfig{
+		metrics = Metrics{
 			Mu:             sync.Mutex{},
 			FileserverHits: 0,
 		}
 	})
-	return &config
+	return &metrics
 }

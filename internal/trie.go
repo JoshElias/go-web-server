@@ -1,4 +1,4 @@
-package handlers
+package internal
 
 type node struct {
 	children map[rune]*node
@@ -48,4 +48,3 @@ func (t *Trie) Exists(s string) bool {
 	}
 	return current.isEnd
 }
-
