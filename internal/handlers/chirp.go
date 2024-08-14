@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/JoshElias/chirpy/internal"
@@ -26,7 +28,7 @@ func init() {
 
 func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	chirp := internal.ChirpDTO{}
+	chirp := internal.ChirpDto{}
 	err := decoder.Decode(&chirp)
 	if err != nil {
 		internal.RespondWithError(w, 500)
@@ -37,17 +39,34 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 400)
 	}
 
-	chirp.Body = cleanMessage(chirp.Body)
+	clean := cleanMessage(chirp.Body)
+	dbPath := filepath.Join(getCwd(), "database.json")
+	conn, err := internal.NewDbConnection(dbPath)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+	}
+	newChirp, err := conn.CreateChirp(clean)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+	}
 	// save in database
 	// return new chirp entity
-	internal.RespondWithJSON(w, 201, chirp)
+	internal.RespondWithJSON(w, 201, newChirp)
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-func validateChirp(chirp internal.ChirpDTO) error {
+func getCwd() string {
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Dir(ex)
+}
+
+func validateChirp(chirp internal.ChirpDto) error {
 	if len(chirp.Body) > 140 {
 		return errors.New("Chirp is too long")
 	}

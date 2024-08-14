@@ -1,10 +1,10 @@
 package internal
 
-type ChirpDTO struct {
+type ChirpDto struct {
 	Body string `json:"body"`
 }
 
 type ChirpEntity struct {
-	ID   int    `json:"id"`
+	Id   int    `json:"id"`
 	Body string `json:"body"`
 }
