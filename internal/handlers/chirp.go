@@ -9,15 +9,6 @@ import (
 	"github.com/JoshElias/chirpy/internal"
 )
 
-type ChirpDTO struct {
-	Body string `json:"body"`
-}
-
-type ChirpEnitity struct {
-	ID   int    `json:"id"`
-	Body string `json:"body"`
-}
-
 var badWords = []string{
 	"kerfuffle",
 	"sharbert",
@@ -35,7 +26,7 @@ func init() {
 
 func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	chirp := internal.Chirp{}
+	chirp := internal.ChirpDTO{}
 	err := decoder.Decode(&chirp)
 	if err != nil {
 		internal.RespondWithError(w, 500)
@@ -56,7 +47,7 @@ func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-func validateChirp(chirp internal.Chirp) error {
+func validateChirp(chirp internal.ChirpDTO) error {
 	if len(chirp.Body) > 140 {
 		return errors.New("Chirp is too long")
 	}
