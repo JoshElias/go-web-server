@@ -37,40 +37,47 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 
 	if err := validateChirp(chirp); err != nil {
 		internal.RespondWithError(w, 400)
+		return
 	}
 
 	clean := cleanMessage(chirp.Body)
-	dbPath := filepath.Join(getCwd(), "database.json")
+	wd, err := os.Getwd()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	dbPath := filepath.Join(wd, "database.json")
 	conn, err := internal.NewDbConnection(dbPath)
 	if err != nil {
 		internal.RespondWithError(w, 500)
+		return
 	}
 	newChirp, err := conn.CreateChirp(clean)
 	if err != nil {
 		internal.RespondWithError(w, 500)
+		return
 	}
 	internal.RespondWithJSON(w, 201, newChirp)
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	dbPath := filepath.Join(getCwd(), "database.json")
+	wd, err := os.Getwd()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	dbPath := filepath.Join(wd, "database.json")
 	conn, err := internal.NewDbConnection(dbPath)
 	if err != nil {
 		internal.RespondWithError(w, 500)
+		return
 	}
 	chirps, err := conn.GetChirps()
 	if err != nil {
 		internal.RespondWithError(w, 500)
+		return
 	}
-	internal.RespondWithJSON(w, 201, chirps)
-}
-
-func getCwd() string {
-	ex, err := os.Executable()
-	if err != nil {
-		panic(err)
-	}
-	return filepath.Dir(ex)
+	internal.RespondWithJSON(w, 200, chirps)
 }
 
 func validateChirp(chirp internal.ChirpDto) error {
