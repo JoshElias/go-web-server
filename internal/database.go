@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -34,8 +35,14 @@ func (conn *DbConnection) loadDb() (DbStructure, error) {
 	if err != nil {
 		return DbStructure{}, err
 	}
+	if len(byteArr) == 0 {
+		return DbStructure{
+			Chirps: make(map[int]ChirpEntity),
+		}, nil
+	}
 	var db DbStructure
 	if err := json.Unmarshal(byteArr, &db); err != nil {
+		fmt.Println(err)
 		return DbStructure{}, err
 	}
 	return db, nil
@@ -62,8 +69,10 @@ func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
 	}
 	chirpLen := len(db.Chirps)
 	chirps := make([]ChirpEntity, chirpLen)
-	for i, chirp := range db.Chirps {
-		chirps[i] = chirp
+	idx := 0
+	for _, chirp := range db.Chirps {
+		chirps[idx] = chirp
+		idx++
 	}
 	return chirps, nil
 }
@@ -73,7 +82,7 @@ func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
 	if err != nil {
 		return ChirpEntity{}, err
 	}
-	id := len(db.Chirps)
+	id := len(db.Chirps) + 1
 	newEntity := ChirpEntity{
 		Id:   id,
 		Body: message,
