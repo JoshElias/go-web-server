@@ -2,9 +2,11 @@ package internal
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -17,6 +19,48 @@ type DbConnection struct {
 type DbStructure struct {
 	Chirps map[int]ChirpEntity `json:"chirps"`
 	Users  map[int]UserEntity  `json:"users"`
+}
+
+func init() {
+	dbg := flag.Bool("debug", false, "Enable debug mode")
+	flag.Parse()
+	if *dbg {
+		if err := DeleteTestDb(); err != nil {
+			panic(err)
+		}
+	}
+}
+
+var TEST_DATABASE_FILENAME = "database.json"
+
+func GetTestDbPath() (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(wd, TEST_DATABASE_FILENAME), nil
+}
+
+func GetTestDbConnection() (*DbConnection, error) {
+	path, err := GetTestDbPath()
+	if err != nil {
+		return nil, err
+	}
+	return NewDbConnection(path)
+}
+
+func DeleteTestDb() error {
+	path, err := GetTestDbPath()
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil
+	}
+	if err = os.Remove(path); err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewDbConnection(path string) (*DbConnection, error) {

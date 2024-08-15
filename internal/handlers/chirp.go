@@ -4,15 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/JoshElias/chirpy/internal"
 )
-
-var DATABASE_FILENAME = "database.json"
 
 var badWords = []string{
 	"kerfuffle",
@@ -44,7 +40,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clean := cleanMessage(chirp.Body)
-	conn, err := getDbConnection()
+	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -58,7 +54,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	conn, err := getDbConnection()
+	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -78,7 +74,7 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 404)
 		return
 	}
-	conn, err := getDbConnection()
+	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 	}
@@ -94,15 +90,6 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	internal.RespondWithJSON(w, 200, chirp)
-}
-
-func getDbConnection() (*internal.DbConnection, error) {
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	dbPath := filepath.Join(wd, DATABASE_FILENAME)
-	return internal.NewDbConnection(dbPath)
 }
 
 func validateChirp(chirp internal.ChirpDto) error {

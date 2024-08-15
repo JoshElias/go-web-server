@@ -16,7 +16,7 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := getDbConnection()
+	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
