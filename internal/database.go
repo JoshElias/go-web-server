@@ -26,6 +26,8 @@ func NewDbConnection(path string) (*DbConnection, error) {
 }
 
 func (conn *DbConnection) loadDb() (DbStructure, error) {
+	conn.mux.Lock()
+	defer conn.mux.Unlock()
 	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_RDONLY, 0644)
 	if err != nil {
 		return DbStructure{}, err
@@ -49,6 +51,8 @@ func (conn *DbConnection) loadDb() (DbStructure, error) {
 }
 
 func (conn *DbConnection) writeDb(db DbStructure) error {
+	conn.mux.Lock()
+	defer conn.mux.Unlock()
 	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
