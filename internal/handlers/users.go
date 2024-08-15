@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/JoshElias/chirpy/internal"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HandleAddUser(w http.ResponseWriter, r *http.Request) {
@@ -15,16 +16,21 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 500)
 		return
 	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
 
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
 	}
-	newChirp, err := conn.CreateUser(user.Email)
+	newUser, err := conn.CreateUser(user.Email, hash)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
 	}
-	internal.RespondWithJSON(w, 201, newChirp)
+	internal.RespondWithJSON(w, 201, newUser)
 }

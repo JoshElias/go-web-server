@@ -145,15 +145,16 @@ func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
 	return newEntity, nil
 }
 
-func (conn *DbConnection) CreateUser(email string) (UserEntity, error) {
+func (conn *DbConnection) CreateUser(email string, password []byte) (UserEntity, error) {
 	db, err := conn.LoadDb()
 	if err != nil {
 		return UserEntity{}, err
 	}
 	id := len(db.Users) + 1
 	newUser := UserEntity{
-		Id:    id,
-		Email: email,
+		Id:       id,
+		Email:    email,
+		Password: password,
 	}
 	db.Users[id] = newUser
 	err = conn.writeDb(db)
