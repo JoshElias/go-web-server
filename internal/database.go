@@ -16,6 +16,7 @@ type DbConnection struct {
 
 type DbStructure struct {
 	Chirps map[int]ChirpEntity `json:"chirps"`
+	Users  map[int]UserEntity  `json:"users"`
 }
 
 func NewDbConnection(path string) (*DbConnection, error) {
@@ -97,4 +98,22 @@ func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
 		return ChirpEntity{}, nil
 	}
 	return newEntity, nil
+}
+
+func (conn *DbConnection) CreateUser(email string) (UserEntity, error) {
+	db, err := conn.LoadDb()
+	if err != nil {
+		return UserEntity{}, err
+	}
+	id := len(db.Users) + 1
+	newUser := UserEntity{
+		Id:    id,
+		Email: email,
+	}
+	db.Users[id] = newUser
+	err = conn.writeDb(db)
+	if err != nil {
+		return UserEntity{}, nil
+	}
+	return newUser, nil
 }
