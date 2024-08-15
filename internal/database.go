@@ -41,6 +41,7 @@ func (conn *DbConnection) LoadDb() (DbStructure, error) {
 	if len(byteArr) == 0 {
 		return DbStructure{
 			Chirps: make(map[int]ChirpEntity),
+			Users:  make(map[int]UserEntity),
 		}, nil
 	}
 	var db DbStructure
