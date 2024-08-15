@@ -18,6 +18,7 @@ func main() {
 	mux.HandleFunc("/api/reset", handlers.ResetHandler)
 	mux.HandleFunc("/admin/metrics", handlers.HandleMetricsAdmin)
 	mux.HandleFunc("GET /api/chirps", handlers.HandleGetChirps)
+	mux.HandleFunc("GET /api/chirps/{chirpId}", handlers.HandleGetChirp)
 	mux.HandleFunc("POST /api/chirps", handlers.HandleAddChirp)
 
 	fmt.Println("server listening on localhost:8080")

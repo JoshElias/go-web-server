@@ -11,6 +11,8 @@ import (
 	"github.com/JoshElias/chirpy/internal"
 )
 
+var DATABASE_FILENAME = "database.json"
+
 var badWords = []string{
 	"kerfuffle",
 	"sharbert",
@@ -41,13 +43,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clean := cleanMessage(chirp.Body)
-	wd, err := os.Getwd()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	dbPath := filepath.Join(wd, "database.json")
-	conn, err := internal.NewDbConnection(dbPath)
+	conn, err := getDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -61,13 +57,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	wd, err := os.Getwd()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	dbPath := filepath.Join(wd, "database.json")
-	conn, err := internal.NewDbConnection(dbPath)
+	conn, err := getDbConnection()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -78,6 +68,37 @@ func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	internal.RespondWithJSON(w, 200, chirps)
+}
+
+func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
+	chirpId := r.PathValue("chirpId")
+	if len(chirpId) == 0 {
+		internal.RespondWithError(w, 404)
+		return
+	}
+	conn, err := getDbConnection()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+	}
+	db, err := conn.GetChirps()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	chirp, exists := db[chirpId]
+	if !exists {
+		internal.RespondWithError(w, 404)
+		return
+	}
+}
+
+func getDbConnection() (*internal.DbConnection, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	dbPath := filepath.Join(wd, DATABASE_FILENAME)
+	return internal.NewDbConnection(dbPath)
 }
 
 func validateChirp(chirp internal.ChirpDto) error {
