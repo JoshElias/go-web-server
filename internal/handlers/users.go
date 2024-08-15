@@ -7,18 +7,9 @@ import (
 	"github.com/JoshElias/chirpy/internal"
 )
 
-type UserDto struct {
-	Email string `json:"email"`
-}
-
-type UserEntity struct {
-	Id    int    `json:"id"`
-	Email string `json:"email"`
-}
-
 func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	user := UserDto{}
+	user := internal.UserDto{}
 	err := decoder.Decode(&user)
 	if err != nil {
 		internal.RespondWithError(w, 500)
