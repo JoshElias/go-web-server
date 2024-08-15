@@ -25,7 +25,7 @@ func NewDbConnection(path string) (*DbConnection, error) {
 	}, nil
 }
 
-func (conn *DbConnection) loadDb() (DbStructure, error) {
+func (conn *DbConnection) LoadDb() (DbStructure, error) {
 	conn.mux.Lock()
 	defer conn.mux.Unlock()
 	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_RDONLY, 0644)
@@ -67,7 +67,7 @@ func (conn *DbConnection) writeDb(db DbStructure) error {
 }
 
 func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
-	db, err := conn.loadDb()
+	db, err := conn.LoadDb()
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
 }
 
 func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
-	db, err := conn.loadDb()
+	db, err := conn.LoadDb()
 	if err != nil {
 		return ChirpEntity{}, err
 	}

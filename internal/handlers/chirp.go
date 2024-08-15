@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/JoshElias/chirpy/internal"
@@ -71,8 +72,9 @@ func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
-	chirpId := r.PathValue("chirpId")
-	if len(chirpId) == 0 {
+	chirpIdString := r.PathValue("chirpId")
+	chirpId, err := strconv.Atoi(chirpIdString)
+	if err != nil || chirpId < 0 {
 		internal.RespondWithError(w, 404)
 		return
 	}
@@ -80,16 +82,18 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		internal.RespondWithError(w, 500)
 	}
-	db, err := conn.GetChirps()
+	db, err := conn.LoadDb()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
 	}
-	chirp, exists := db[chirpId]
+
+	chirp, exists := db.Chirps[chirpId]
 	if !exists {
 		internal.RespondWithError(w, 404)
 		return
 	}
+	internal.RespondWithJSON(w, 200, chirp)
 }
 
 func getDbConnection() (*internal.DbConnection, error) {
