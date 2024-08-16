@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/JoshElias/chirpy/internal/handlers"
 	"github.com/JoshElias/chirpy/internal/middleware"
-	"net/http"
+	"github.com/joho/godotenv"
 )
 
 // listen on some endpoints, do some stuff
 func main() {
+	godotenv.Load()
 
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir("./public"))

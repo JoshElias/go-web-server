@@ -33,7 +33,7 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	userLogin := internal.UserDto{}
+	userLogin := internal.UserLogin{}
 	err := decoder.Decode(&userLogin)
 	if err != nil {
 		internal.RespondWithError(w, 500)

@@ -1,5 +1,11 @@
 package internal
 
+type UserLogin struct {
+	Email            string `json:"email"`
+	Password         string `json:"password"`
+	ExpiresInSeconds int    `json:"expires_in_seconds"`
+}
+
 type UserDto struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
