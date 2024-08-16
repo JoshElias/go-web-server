@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/JoshElias/chirpy/internal"
@@ -17,14 +18,13 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 500)
 		return
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
 
-	newUser, err := services.CreateUser(user.Email, hash)
+	newUser, err := services.CreateUser(user)
 	if err != nil {
+		if errors.Is(err, internal.UserAlreadyExists) {
+			internal.RespondWithError(w, 400)
+			return
+		}
 		internal.RespondWithError(w, 500)
 		return
 	}
