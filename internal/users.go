@@ -10,3 +10,8 @@ type UserEntity struct {
 	Email    string `json:"email"`
 	Password []byte `json:"password"`
 }
+
+type UserView struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+}

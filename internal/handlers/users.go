@@ -34,3 +34,40 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 	}
 	internal.RespondWithJSON(w, 201, newUser)
 }
+
+func HandleLogin(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	userLogin := internal.UserDto{}
+	err := decoder.Decode(&userLogin)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+
+	conn, err := internal.GetTestDbConnection()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	user, err := conn.GetUserByEmail(userLogin.Email)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	err = bcrypt.CompareHashAndPassword(
+		user.Password,
+		[]byte(userLogin.Password),
+	)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	internal.RespondWithJSON(
+		w,
+		200,
+		internal.UserView{
+			Id:    user.Id,
+			Email: user.Email,
+		},
+	)
+}
