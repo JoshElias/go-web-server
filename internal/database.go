@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -97,7 +96,7 @@ func (conn *DbConnection) LoadDb() (DbStructure, error) {
 	return db, nil
 }
 
-func (conn *DbConnection) writeDb(db DbStructure) error {
+func (conn *DbConnection) WriteDb(db DbStructure) error {
 	conn.mux.Lock()
 	defer conn.mux.Unlock()
 	f, err := os.OpenFile(conn.path, os.O_CREATE|os.O_WRONLY, 0644)
@@ -111,69 +110,4 @@ func (conn *DbConnection) writeDb(db DbStructure) error {
 	}
 	_, err = f.Write(bytes)
 	return err
-}
-
-func (conn *DbConnection) GetChirps() ([]ChirpEntity, error) {
-	db, err := conn.LoadDb()
-	if err != nil {
-		return nil, err
-	}
-	chirpLen := len(db.Chirps)
-	chirps := make([]ChirpEntity, chirpLen)
-	idx := 0
-	for _, chirp := range db.Chirps {
-		chirps[idx] = chirp
-		idx++
-	}
-	return chirps, nil
-}
-
-func (conn *DbConnection) CreateChirp(message string) (ChirpEntity, error) {
-	db, err := conn.LoadDb()
-	if err != nil {
-		return ChirpEntity{}, err
-	}
-	id := len(db.Chirps) + 1
-	newEntity := ChirpEntity{
-		Id:   id,
-		Body: message,
-	}
-	db.Chirps[id] = newEntity
-	err = conn.writeDb(db)
-	if err != nil {
-		return ChirpEntity{}, nil
-	}
-	return newEntity, nil
-}
-
-func (conn *DbConnection) CreateUser(email string, password []byte) (UserEntity, error) {
-	db, err := conn.LoadDb()
-	if err != nil {
-		return UserEntity{}, err
-	}
-	id := len(db.Users) + 1
-	newUser := UserEntity{
-		Id:       id,
-		Email:    email,
-		Password: password,
-	}
-	db.Users[id] = newUser
-	err = conn.writeDb(db)
-	if err != nil {
-		return UserEntity{}, nil
-	}
-	return newUser, nil
-}
-
-func (conn *DbConnection) GetUserByEmail(email string) (UserEntity, error) {
-	db, err := conn.LoadDb()
-	if err != nil {
-		return UserEntity{}, err
-	}
-	for _, user := range db.Users {
-		if user.Email == email {
-			return user, nil
-		}
-	}
-	return UserEntity{}, errors.New("User not found")
 }

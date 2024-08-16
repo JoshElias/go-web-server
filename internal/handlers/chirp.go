@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/chirpy/internal/services"
 )
 
 var badWords = []string{
@@ -40,12 +41,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clean := cleanMessage(chirp.Body)
-	conn, err := internal.GetTestDbConnection()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	newChirp, err := conn.CreateChirp(clean)
+	newChirp, err := services.CreateChirp(clean)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -54,12 +50,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	conn, err := internal.GetTestDbConnection()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	chirps, err := conn.GetChirps()
+	chirps, err := services.GetChirps()
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return

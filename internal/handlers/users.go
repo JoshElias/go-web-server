@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/chirpy/internal/services"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,12 +23,7 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := internal.GetTestDbConnection()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	newUser, err := conn.CreateUser(user.Email, hash)
+	newUser, err := services.CreateUser(user.Email, hash)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -44,12 +40,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	conn, err := internal.GetTestDbConnection()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-	user, err := conn.GetUserByEmail(userLogin.Email)
+	user, err := services.GetUserByEmail(userLogin.Email)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
