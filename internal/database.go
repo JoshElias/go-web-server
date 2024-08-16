@@ -2,6 +2,7 @@ package internal
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -162,4 +163,17 @@ func (conn *DbConnection) CreateUser(email string, password []byte) (UserEntity,
 		return UserEntity{}, nil
 	}
 	return newUser, nil
+}
+
+func (conn *DbConnection) GetUserByEmail(email string) (UserEntity, error) {
+	db, err := conn.LoadDb()
+	if err != nil {
+		return UserEntity{}, err
+	}
+	for _, user := range db.Users {
+		if user.Email == email {
+			return user, nil
+		}
+	}
+	return UserEntity{}, errors.New("User not found")
 }
