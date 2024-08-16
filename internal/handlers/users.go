@@ -39,7 +39,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 500)
 		return
 	}
-
 	user, err := services.GetUserByEmail(userLogin.Email)
 	if err != nil {
 		internal.RespondWithError(w, 500)
@@ -50,7 +49,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		[]byte(userLogin.Password),
 	)
 	if err != nil {
-		internal.RespondWithError(w, 500)
+		internal.RespondWithError(w, 401)
 		return
 	}
 	internal.RespondWithJSON(
