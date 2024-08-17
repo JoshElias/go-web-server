@@ -56,7 +56,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 401)
 		return
 	}
-	token, err := internal.NewJwtToken(user.Id, 3) //loginRequest.ExpiresInSeconds)
+	token, err := internal.NewJwtToken(user.Id)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
