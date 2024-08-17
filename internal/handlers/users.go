@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
 
 	"github.com/JoshElias/chirpy/internal"
 	"github.com/JoshElias/chirpy/internal/services"
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -52,7 +56,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 401)
 		return
 	}
-	token, err := internal.NewJwtToken(user.Id, loginRequest.ExpiresInSeconds)
+	token, err := internal.NewJwtToken(user.Id, 3) //loginRequest.ExpiresInSeconds)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
@@ -64,6 +68,52 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 			Id:    user.Id,
 			Email: user.Email,
 			Token: token,
+		},
+	)
+}
+
+func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	claims := &jwt.RegisteredClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		internal.RespondWithError(w, 401)
+		return
+	}
+	userIdString, err := token.Claims.GetSubject()
+	if err != nil {
+		internal.RespondWithError(w, 401)
+		return
+	}
+	userId, err := strconv.Atoi(userIdString)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	userPatch := internal.UserDto{}
+	err = decoder.Decode(&userPatch)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+
+	user, err := services.UpdateUserById(userId, userPatch)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+
+	internal.RespondWithJSON(
+		w,
+		200,
+		internal.UserView{
+			Id:    user.Id,
+			Email: user.Email,
 		},
 	)
 }

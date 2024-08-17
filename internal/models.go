@@ -9,12 +9,17 @@ type UserLoginRequest struct {
 type UserLoginResponse struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
-	Token string
+	Token string `json:"token"`
 }
 
 type UserDto struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type UserView struct {
+	Id    int    `json:"id"`
+	Email string `json:"email"`
 }
 
 type UserEntity struct {

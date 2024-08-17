@@ -73,6 +73,33 @@ func GetUserByEmail(email string) (internal.UserEntity, error) {
 	return internal.UserEntity{}, internal.UserNotFound
 }
 
+func UpdateUserById(id int, patch internal.UserDto) (internal.UserEntity, error) {
+	conn, err := internal.GetTestDbConnection()
+	if err != nil {
+		return internal.UserEntity{}, err
+	}
+	db, err := conn.LoadDb()
+	if err != nil {
+		return internal.UserEntity{}, err
+	}
+	user, exists := db.Users[id]
+	if !exists {
+		return internal.UserEntity{}, internal.UserNotFound
+	}
+	user.Email = patch.Email
+	passHash, err := bcrypt.GenerateFromPassword([]byte(patch.Password), 12)
+	if err != nil {
+		return internal.UserEntity{}, err
+	}
+	user.Password = passHash
+	db.Users[id] = user
+	err = conn.WriteDb(db)
+	if err != nil {
+		return internal.UserEntity{}, nil
+	}
+	return user, nil
+}
+
 func IsUniqueUserEmail(email string) (bool, error) {
 	_, err := GetUserByEmail(email)
 	if err != nil {

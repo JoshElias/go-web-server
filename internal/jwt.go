@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -15,7 +16,10 @@ func NewJwtToken(userId int, expirySeconds int) (string, error) {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(expirySeconds) * time.Second)),
 		Subject:   strconv.Itoa(userId),
 	}
-	jwt := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	jwtSecret := os.Getenv("JWT_SECRET")
-	return jwt.SignedString(jwtSecret)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	secretString := os.Getenv("JWT_SECRET")
+	if secretString == "" {
+		return "", fmt.Errorf("JWT_SECRET env var not set")
+	}
+	return token.SignedString([]byte(secretString))
 }
