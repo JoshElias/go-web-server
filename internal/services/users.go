@@ -40,6 +40,22 @@ func CreateUser(dto internal.UserDto) (internal.UserEntity, error) {
 	return newUser, nil
 }
 
+func GetUserById(id int) (internal.UserEntity, error) {
+	conn, err := internal.GetTestDbConnection()
+	if err != nil {
+		return internal.UserEntity{}, err
+	}
+	db, err := conn.LoadDb()
+	if err != nil {
+		return internal.UserEntity{}, err
+	}
+	user, exists := db.Users[id]
+	if !exists {
+		return internal.UserEntity{}, internal.UserNotFound
+	}
+	return user, nil
+}
+
 func GetUserByEmail(email string) (internal.UserEntity, error) {
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
