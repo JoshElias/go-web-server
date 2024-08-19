@@ -9,6 +9,10 @@ func RespondWithError(w http.ResponseWriter, code int) {
 	w.WriteHeader(code)
 }
 
+func RespondWithStatus(w http.ResponseWriter, code int) {
+	w.WriteHeader(code)
+}
+
 func RespondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	data, err := json.Marshal(payload)
 	if err != nil {

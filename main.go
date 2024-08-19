@@ -26,6 +26,8 @@ func main() {
 	mux.HandleFunc("POST /api/users", handlers.HandleAddUser)
 	mux.HandleFunc("POST /api/login", handlers.HandleLogin)
 	mux.HandleFunc("PUT /api/users", handlers.HandleUpdateUser)
+	mux.HandleFunc("POST /api/refresh", handlers.HandleRefreshToken)
+	mux.HandleFunc("POST /api/revoke", handlers.HandleTokenRevoke)
 
 	fmt.Println("server listening on localhost:8080")
 	if err := http.ListenAndServe("localhost:8080", mux); err == nil {

@@ -1,5 +1,7 @@
 package internal
 
+import "github.com/golang-jwt/jwt/v5"
+
 type UserLoginRequest struct {
 	Email            string `json:"email"`
 	Password         string `json:"password"`
@@ -7,8 +9,13 @@ type UserLoginRequest struct {
 }
 
 type UserLoginResponse struct {
-	Id    int    `json:"id"`
-	Email string `json:"email"`
+	Id           int    `json:"id"`
+	Email        string `json:"email"`
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshTokenResponse struct {
 	Token string `json:"token"`
 }
 
@@ -35,4 +42,10 @@ type ChirpDto struct {
 type ChirpEntity struct {
 	Id   int    `json:"id"`
 	Body string `json:"body"`
+}
+
+type RefreshToken struct {
+	UserId    int              `json:"userId"`
+	ExpiresAt *jwt.NumericDate `json:"expires_at"`
+	Token     string           `json:"token"`
 }
