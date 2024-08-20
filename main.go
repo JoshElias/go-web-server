@@ -29,7 +29,7 @@ func main() {
 		),
 	)
 	mux.Handle(
-		"DELETE /api/chirps",
+		"DELETE /api/chirps/{chirpId}",
 		middleware.Auth(
 			http.HandlerFunc(handlers.HandleDeleteChirp),
 		),

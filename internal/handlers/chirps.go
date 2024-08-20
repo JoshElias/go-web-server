@@ -85,22 +85,33 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 func HandleDeleteChirp(w http.ResponseWriter, r *http.Request) {
 	chirpIdString := r.PathValue("chirpId")
 	chirpId, err := strconv.Atoi(chirpIdString)
-	if err != nil || chirpId < 0 {
-		internal.RespondWithError(w, 404)
+	if err != nil {
+		internal.RespondWithError(w, 401)
 		return
 	}
-
 	userId, ok := r.Context().Value("userId").(int)
 	if !ok {
 		internal.RespondWithError(w, 401)
 		return
 	}
-	_, err = services.DeleteChirpById(userId)
+	chirp, err := services.GetChirpById(chirpId)
+	if err != nil {
+		if errors.Is(err, internal.ChirpNotFound) {
+			internal.RespondWithStatus(w, 404)
+			return
+		}
+		internal.RespondWithStatus(w, 500)
+		return
+	}
+	if chirp.AuthorId != userId {
+		internal.RespondWithStatus(w, 403)
+		return
+	}
+	_, err = services.DeleteChirpById(chirpId)
 	if err != nil {
 		internal.RespondWithError(w, 401)
 		return
 	}
-
 	internal.RespondWithStatus(w, 204)
 }
 

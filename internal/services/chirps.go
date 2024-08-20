@@ -24,7 +24,7 @@ func GetChirps() ([]internal.ChirpEntity, error) {
 }
 
 func GetChirpById(id int) (internal.ChirpEntity, error) {
-	if id < 0 {
+	if id < 1 {
 		return internal.ChirpEntity{}, internal.ChirpNotFound
 	}
 	conn, err := internal.GetTestDbConnection()
