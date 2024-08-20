@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/JoshElias/go-web-server/internal"
 	"github.com/JoshElias/go-web-server/internal/services"
@@ -36,11 +37,10 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 401)
 		return
 	}
-	decoder := json.NewDecoder(r.Body)
-	userPatch := internal.UserDto{}
-	err := decoder.Decode(&userPatch)
-	if err != nil {
-		internal.RespondWithError(w, 500)
+	chirpIdString := r.PathValue("chirpId")
+	chirpId, err := strconv.Atoi(chirpIdString)
+	if err != nil || chirpId < 0 {
+		internal.RespondWithError(w, 404)
 		return
 	}
 

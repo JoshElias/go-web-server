@@ -28,6 +28,12 @@ func main() {
 			http.HandlerFunc(handlers.HandleAddChirp),
 		),
 	)
+	mux.Handle(
+		"DELETE /api/chirps",
+		middleware.Auth(
+			http.HandlerFunc(handlers.HandleDeleteChirp),
+		),
+	)
 	mux.HandleFunc("POST /api/users", handlers.HandleAddUser)
 	mux.HandleFunc("POST /api/login", handlers.HandleLogin)
 	mux.Handle(

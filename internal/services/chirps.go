@@ -1,6 +1,8 @@
 package services
 
-import "github.com/JoshElias/go-web-server/internal"
+import (
+	"github.com/JoshElias/go-web-server/internal"
+)
 
 func GetChirps() ([]internal.ChirpEntity, error) {
 	conn, err := internal.GetTestDbConnection()
@@ -19,6 +21,27 @@ func GetChirps() ([]internal.ChirpEntity, error) {
 		idx++
 	}
 	return chirps, nil
+}
+
+func GetChirpById(id int) (internal.ChirpEntity, error) {
+	if id < 0 {
+		return internal.ChirpEntity{}, internal.ChirpNotFound
+	}
+	conn, err := internal.GetTestDbConnection()
+	if err != nil {
+		return internal.ChirpEntity{}, err
+	}
+	db, err := conn.LoadDb()
+	if err != nil {
+		return internal.ChirpEntity{}, err
+	}
+	chirp, exists := db.Chirps[id]
+	if !exists {
+		return internal.ChirpEntity{}, internal.ChirpNotFound
+
+	}
+	return chirp, nil
+
 }
 
 func CreateChirp(authorId int, message string) (internal.ChirpEntity, error) {

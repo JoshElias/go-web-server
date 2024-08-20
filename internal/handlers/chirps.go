@@ -70,13 +70,19 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 404)
 		return
 	}
-	chirp, err := services.GetChirpById(chirpId)
+	conn, err := internal.GetTestDbConnection()
 	if err != nil {
-		if errors.Is(err, internal.ChirpNotFound) {
-			internal.RespondWithError(w, 404)
-			return
-		}
 		internal.RespondWithError(w, 500)
+	}
+	db, err := conn.LoadDb()
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+
+	chirp, exists := db.Chirps[chirpId]
+	if !exists {
+		internal.RespondWithError(w, 404)
 		return
 	}
 	internal.RespondWithJSON(w, 200, chirp)
