@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/go-web-server/internal"
 	"net/http"
 )
 

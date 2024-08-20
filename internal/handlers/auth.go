@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/JoshElias/chirpy/internal"
-	"github.com/JoshElias/chirpy/internal/services"
+	"github.com/JoshElias/go-web-server/internal"
+	"github.com/JoshElias/go-web-server/internal/services"
 	"golang.org/x/crypto/bcrypt"
 )
 

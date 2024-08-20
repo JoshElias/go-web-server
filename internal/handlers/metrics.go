@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/go-web-server/internal"
 )
 
 func HandleMetricsAdmin(w http.ResponseWriter, r *http.Request) {

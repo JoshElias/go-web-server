@@ -1,6 +1,6 @@
 package services
 
-import "github.com/JoshElias/chirpy/internal"
+import "github.com/JoshElias/go-web-server/internal"
 
 func GetChirps() ([]internal.ChirpEntity, error) {
 	conn, err := internal.GetTestDbConnection()

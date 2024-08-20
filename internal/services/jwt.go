@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/go-web-server/internal"
 	"github.com/golang-jwt/jwt/v5"
 )
 

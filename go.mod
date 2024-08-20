@@ -1,4 +1,4 @@
-module github.com/JoshElias/chirpy
+module github.com/JoshElias/go-web-server
 
 go 1.22.5
 

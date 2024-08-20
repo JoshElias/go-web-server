@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JoshElias/chirpy/internal/handlers"
-	"github.com/JoshElias/chirpy/internal/middleware"
+	"github.com/JoshElias/go-web-server/internal/handlers"
+	"github.com/JoshElias/go-web-server/internal/middleware"
 	"github.com/joho/godotenv"
 )
 

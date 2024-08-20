@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/JoshElias/chirpy/internal"
-	"github.com/JoshElias/chirpy/internal/services"
+	"github.com/JoshElias/go-web-server/internal"
+	"github.com/JoshElias/go-web-server/internal/services"
 )
 
 var badWords = []string{

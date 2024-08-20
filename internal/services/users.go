@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 
-	"github.com/JoshElias/chirpy/internal"
+	"github.com/JoshElias/go-web-server/internal"
 	"golang.org/x/crypto/bcrypt"
 )
 

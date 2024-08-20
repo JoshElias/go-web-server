@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/JoshElias/chirpy/internal"
-	"github.com/JoshElias/chirpy/internal/services"
+	"github.com/JoshElias/go-web-server/internal"
+	"github.com/JoshElias/go-web-server/internal/services"
 	"github.com/golang-jwt/jwt/v5"
 )
 
