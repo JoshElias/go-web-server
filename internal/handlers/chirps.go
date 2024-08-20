@@ -70,19 +70,13 @@ func HandleGetChirp(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 404)
 		return
 	}
-	conn, err := internal.GetTestDbConnection()
+	chirp, err := services.GetChirpById(chirpId)
 	if err != nil {
+		if errors.Is(err, internal.ChirpNotFound) {
+			internal.RespondWithError(w, 404)
+			return
+		}
 		internal.RespondWithError(w, 500)
-	}
-	db, err := conn.LoadDb()
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-
-	chirp, exists := db.Chirps[chirpId]
-	if !exists {
-		internal.RespondWithError(w, 404)
 		return
 	}
 	internal.RespondWithJSON(w, 200, chirp)
@@ -101,8 +95,13 @@ func HandleDeleteChirp(w http.ResponseWriter, r *http.Request) {
 		internal.RespondWithError(w, 401)
 		return
 	}
+	_, err = services.DeleteChirpById(userId)
+	if err != nil {
+		internal.RespondWithError(w, 401)
+		return
+	}
 
-	internal.RespondWithJSON(w, 201, newChirp)
+	internal.RespondWithStatus(w, 204)
 }
 
 func validateChirp(chirp internal.ChirpDto) error {

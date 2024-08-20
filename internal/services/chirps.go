@@ -66,3 +66,20 @@ func CreateChirp(authorId int, message string) (internal.ChirpEntity, error) {
 	}
 	return newEntity, nil
 }
+
+func DeleteChirpById(id int) (bool, error) {
+	conn, err := internal.GetTestDbConnection()
+	if err != nil {
+		return false, err
+	}
+	db, err := conn.LoadDb()
+	if err != nil {
+		return false, err
+	}
+	_, exists := db.Chirps[id]
+	if !exists {
+		return false, nil
+	}
+	delete(db.Chirps, id)
+	return true, nil
+}
