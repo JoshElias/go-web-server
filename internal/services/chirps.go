@@ -21,7 +21,7 @@ func GetChirps() ([]internal.ChirpEntity, error) {
 	return chirps, nil
 }
 
-func CreateChirp(message string) (internal.ChirpEntity, error) {
+func CreateChirp(authorId int, message string) (internal.ChirpEntity, error) {
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		return internal.ChirpEntity{}, err
@@ -32,8 +32,9 @@ func CreateChirp(message string) (internal.ChirpEntity, error) {
 	}
 	id := len(db.Chirps) + 1
 	newEntity := internal.ChirpEntity{
-		Id:   id,
-		Body: message,
+		Id:       id,
+		Body:     message,
+		AuthorId: authorId,
 	}
 	db.Chirps[id] = newEntity
 	err = conn.WriteDb(db)

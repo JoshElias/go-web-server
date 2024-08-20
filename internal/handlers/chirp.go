@@ -27,6 +27,11 @@ func init() {
 }
 
 func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
+	userId, ok := r.Context().Value("userId").(int)
+	if !ok {
+		internal.RespondWithError(w, 401)
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	chirp := internal.ChirpDto{}
 	err := decoder.Decode(&chirp)
@@ -41,7 +46,7 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	clean := cleanMessage(chirp.Body)
-	newChirp, err := services.CreateChirp(clean)
+	newChirp, err := services.CreateChirp(userId, clean)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return

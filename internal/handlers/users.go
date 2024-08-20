@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"os"
-	"strconv"
-	"strings"
 
 	"github.com/JoshElias/go-web-server/internal"
 	"github.com/JoshElias/go-web-server/internal/services"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func HandleAddUser(w http.ResponseWriter, r *http.Request) {
@@ -35,30 +31,14 @@ func HandleAddUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	claims := &jwt.RegisteredClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
-	if err != nil {
+	userId, ok := r.Context().Value("userId").(int)
+	if !ok {
 		internal.RespondWithError(w, 401)
 		return
 	}
-	userIdString, err := token.Claims.GetSubject()
-	if err != nil {
-		internal.RespondWithError(w, 401)
-		return
-	}
-	userId, err := strconv.Atoi(userIdString)
-	if err != nil {
-		internal.RespondWithError(w, 500)
-		return
-	}
-
 	decoder := json.NewDecoder(r.Body)
 	userPatch := internal.UserDto{}
-	err = decoder.Decode(&userPatch)
+	err := decoder.Decode(&userPatch)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return

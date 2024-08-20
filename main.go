@@ -22,10 +22,20 @@ func main() {
 	mux.HandleFunc("/admin/metrics", handlers.HandleMetricsAdmin)
 	mux.HandleFunc("GET /api/chirps", handlers.HandleGetChirps)
 	mux.HandleFunc("GET /api/chirps/{chirpId}", handlers.HandleGetChirp)
-	mux.HandleFunc("POST /api/chirps", handlers.HandleAddChirp)
+	mux.Handle(
+		"POST /api/chirps",
+		middleware.Auth(
+			http.HandlerFunc(handlers.HandleAddChirp),
+		),
+	)
 	mux.HandleFunc("POST /api/users", handlers.HandleAddUser)
 	mux.HandleFunc("POST /api/login", handlers.HandleLogin)
-	mux.HandleFunc("PUT /api/users", handlers.HandleUpdateUser)
+	mux.Handle(
+		"PUT /api/users",
+		middleware.Auth(
+			http.HandlerFunc(handlers.HandleUpdateUser),
+		),
+	)
 	mux.HandleFunc("POST /api/refresh", handlers.HandleRefreshToken)
 	mux.HandleFunc("POST /api/revoke", handlers.HandleTokenRevoke)
 
