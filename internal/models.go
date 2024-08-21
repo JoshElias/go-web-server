@@ -59,3 +59,7 @@ type PolkaWebhookEvent struct {
 		UserID int `json:"user_id"`
 	} `json:"data"`
 }
+
+type ChirpQueryOptions struct {
+	AuthorId int
+}

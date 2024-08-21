@@ -1,10 +1,12 @@
 package services
 
 import (
+	"sort"
+
 	"github.com/JoshElias/go-web-server/internal"
 )
 
-func GetChirps() ([]internal.ChirpEntity, error) {
+func GetChirps(options internal.ChirpQueryOptions) ([]internal.ChirpEntity, error) {
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		return nil, err
@@ -13,13 +15,16 @@ func GetChirps() ([]internal.ChirpEntity, error) {
 	if err != nil {
 		return nil, err
 	}
-	chirpLen := len(db.Chirps)
-	chirps := make([]internal.ChirpEntity, chirpLen)
-	idx := 0
+	chirps := make([]internal.ChirpEntity, 0)
 	for _, chirp := range db.Chirps {
-		chirps[idx] = chirp
-		idx++
+		if options.AuthorId != 0 && chirp.AuthorId != options.AuthorId {
+			continue
+		}
+		chirps = append(chirps, chirp)
 	}
+	sort.Slice(chirps, func(i, j int) bool {
+		return chirps[i].Id < chirps[j].Id
+	})
 	return chirps, nil
 }
 

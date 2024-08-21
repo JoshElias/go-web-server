@@ -55,7 +55,16 @@ func HandleAddChirp(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetChirps(w http.ResponseWriter, r *http.Request) {
-	chirps, err := services.GetChirps()
+	authorIdString := r.URL.Query().Get("author_id")
+	authorId, err := strconv.Atoi(authorIdString)
+	if err != nil {
+		internal.RespondWithStatus(w, 500)
+		return
+	}
+	options := internal.ChirpQueryOptions{
+		AuthorId: authorId,
+	}
+	chirps, err := services.GetChirps(options)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
