@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -13,7 +12,6 @@ import (
 )
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("5")
 	decoder := json.NewDecoder(r.Body)
 	loginRequest := internal.UserLoginRequest{}
 	err := decoder.Decode(&loginRequest)
@@ -30,7 +28,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		user.Password,
 		[]byte(loginRequest.Password),
 	); err != nil {
-		fmt.Println("69")
 		internal.RespondWithError(w, 401)
 		return
 	}
