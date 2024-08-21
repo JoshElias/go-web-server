@@ -73,7 +73,7 @@ func GetUserByEmail(email string) (internal.UserEntity, error) {
 	return internal.UserEntity{}, internal.UserNotFound
 }
 
-func UpdateUserById(id int, patch internal.UserDto) (internal.UserEntity, error) {
+func UpdateUserById(id int, patch internal.UserEntity) (internal.UserEntity, error) {
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
 		return internal.UserEntity{}, err
@@ -87,11 +87,12 @@ func UpdateUserById(id int, patch internal.UserDto) (internal.UserEntity, error)
 		return internal.UserEntity{}, internal.UserNotFound
 	}
 	user.Email = patch.Email
-	passHash, err := bcrypt.GenerateFromPassword([]byte(patch.Password), 12)
-	if err != nil {
-		return internal.UserEntity{}, err
-	}
-	user.Password = passHash
+	user.IsChirpyRed = patch.IsChirpyRed
+	// passHash, err := bcrypt.GenerateFromPassword([]byte(patch.Password), 12)
+	// if err != nil {
+	// 	return internal.UserEntity{}, err
+	// }
+	// user.Password = passHash
 	db.Users[id] = user
 	err = conn.WriteDb(db)
 	if err != nil {

@@ -11,6 +11,7 @@ type UserLoginRequest struct {
 type UserLoginResponse struct {
 	Id           int    `json:"id"`
 	Email        string `json:"email"`
+	IsChirpyRed  bool   `json:"is_chirpy_red"`
 	Token        string `json:"token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -30,9 +31,10 @@ type UserView struct {
 }
 
 type UserEntity struct {
-	Id       int    `json:"id"`
-	Email    string `json:"email"`
-	Password []byte `json:"password"`
+	Id          int    `json:"id"`
+	Email       string `json:"email"`
+	Password    []byte `json:"password"`
+	IsChirpyRed bool   `json:"is_chirpy_red"`
 }
 
 type ChirpDto struct {
@@ -49,4 +51,11 @@ type RefreshToken struct {
 	UserId    int              `json:"userId"`
 	ExpiresAt *jwt.NumericDate `json:"expires_at"`
 	Token     string           `json:"token"`
+}
+
+type PolkaWebhookEvent struct {
+	Event string `json:"event"`
+	Data  struct {
+		UserID int `json:"user_id"`
+	} `json:"data"`
 }

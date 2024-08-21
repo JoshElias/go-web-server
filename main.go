@@ -44,6 +44,7 @@ func main() {
 	)
 	mux.HandleFunc("POST /api/refresh", handlers.HandleRefreshToken)
 	mux.HandleFunc("POST /api/revoke", handlers.HandleTokenRevoke)
+	mux.HandleFunc("POST /api/polka/webhooks", handlers.WebhookPolka)
 
 	fmt.Println("server listening on localhost:8080")
 	if err := http.ListenAndServe("localhost:8080", mux); err == nil {

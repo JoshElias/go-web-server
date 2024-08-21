@@ -31,7 +31,6 @@ func NewRefreshToken(userId int) (internal.RefreshToken, error) {
 	randomData := make([]byte, 32)
 	_, err := rand.Read(randomData)
 	if err != nil {
-		fmt.Println("1 ", err)
 		return internal.RefreshToken{}, nil
 	}
 	tokenString := hex.EncodeToString(randomData)
@@ -42,23 +41,19 @@ func NewRefreshToken(userId int) (internal.RefreshToken, error) {
 	}
 	conn, err := internal.GetTestDbConnection()
 	if err != nil {
-		fmt.Println("2")
 		return internal.RefreshToken{}, err
 	}
 	db, err := conn.LoadDb()
 	if err != nil {
-		fmt.Println("3")
 		return internal.RefreshToken{}, err
 	}
 	_, exists := db.RefreshTokens[tokenString]
 	if exists {
-		fmt.Println("4")
 		return internal.RefreshToken{}, fmt.Errorf("we got a collision in access tokens")
 	}
 	db.RefreshTokens[tokenString] = refreshToken
 	err = conn.WriteDb(db)
 	if err != nil {
-		fmt.Println("5")
 		return internal.RefreshToken{}, err
 	}
 	return refreshToken, nil

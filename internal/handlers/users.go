@@ -7,6 +7,7 @@ import (
 
 	"github.com/JoshElias/go-web-server/internal"
 	"github.com/JoshElias/go-web-server/internal/services"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HandleAddUser(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +45,20 @@ func HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := services.UpdateUserById(userId, userPatch)
+	user, err := services.GetUserById(userId)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	user.Email = userPatch.Email
+	// yes I'm a bad person
+	passHash, err := bcrypt.GenerateFromPassword([]byte(userPatch.Password), 12)
+	if err != nil {
+		internal.RespondWithError(w, 500)
+		return
+	}
+	user.Password = passHash
+	user, err = services.UpdateUserById(userId, user)
 	if err != nil {
 		internal.RespondWithError(w, 500)
 		return
