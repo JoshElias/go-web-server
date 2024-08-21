@@ -23,6 +23,9 @@ func GetChirps(options internal.ChirpQueryOptions) ([]internal.ChirpEntity, erro
 		chirps = append(chirps, chirp)
 	}
 	sort.Slice(chirps, func(i, j int) bool {
+		if options.Sort == internal.SortDesc {
+			return chirps[i].Id > chirps[j].Id
+		}
 		return chirps[i].Id < chirps[j].Id
 	})
 	return chirps, nil

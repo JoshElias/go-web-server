@@ -60,6 +60,10 @@ type PolkaWebhookEvent struct {
 	} `json:"data"`
 }
 
+var SortAsc = "asc"
+var SortDesc = "desc"
+
 type ChirpQueryOptions struct {
 	AuthorId int
+	Sort     string
 }
